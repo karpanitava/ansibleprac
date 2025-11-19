@@ -1,0 +1,15 @@
+
+# ansible all -m file  -a 'name=/tmp/example.txt state=touch mode=0770 owner=user1 group=group1'
+---
+- name: file module example
+  hosts: all
+  tasks:
+   - name: create a file
+     ansible.builtin.file:
+      path: /tmp/example.txt 
+      state: touch # state= directory, state=absent
+      mode: 0770
+      owner: user1
+      group: group1
+
+

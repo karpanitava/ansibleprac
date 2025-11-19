@@ -1,0 +1,16 @@
+# this is example of loop in dictionary
+...
+- name :  loop through dictionary
+  hosts: localhost
+  become: yes
+  tasks:
+   - name: install /uninstall packages
+     ansible.builtin.apt:
+       name: "{{item.a}}"
+       state: "{{item.b}}"
+       update_cache: "{{item.c}}"
+     with_items:
+       - { a: maven, b: present, c: yes}          # c: true 
+       - { a: openjdk-11-jdk, b: latest, c: yes}
+       - { a: openjdk-8-jdk, b: absent, c: no}     # c: false
+...

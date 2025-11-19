@@ -1,0 +1,17 @@
+# variable work on a group hosts variable
+---
+- name: Create a user
+  hosts: appservers
+  become: yes
+  vars:
+    username: johandoe
+    password: secretpassword
+    home_dir: /home/johandoe
+    shell: /bin/bash
+  tasks:
+    - name: Ensure user exists
+      ansible.builtin.user:
+        name: "{{ username }}"
+        password: "{{ password }}"
+        home: "{{ home_dir }}"
+        shell: "{{ shell }}"

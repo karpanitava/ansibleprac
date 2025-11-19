@@ -1,0 +1,27 @@
+---
+- name: Install the software
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing nginx
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+        update_cache: yes
+      tags: nginx
+
+    - name: create user
+      ansible.builtin.user:
+        name: hariprasad
+        password: xxxxxx
+        home: /home/file
+      # tags: create_user
+
+    - name: using service module to check if server is running
+      ansible.builtin.uri:
+        url: "http://192.168.0.1:9090"
+        status_code: 200
+      tags: checkserver
+#ansible-playbook ansibletagging.yml --tags=tagged  (only tagged module is excuted)
+#ansible-playbook ansibletagging.yml --tags=untagged (only untagged excuted)
+#ansible-playbook ansibletagging.yml --tags checkserver (only specifed tags are excuted)

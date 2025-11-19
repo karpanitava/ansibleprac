@@ -1,0 +1,26 @@
+# first create a directoory where the playbook are presnet, and a create a file named group of servers exaple: webservers.
+#mkdir host_servers
+#cd host_servers
+# vim webservers.yml
+---
+a: firewall
+b: present
+c: yes
+...
+
+# now the create the playbook to use the group of servers file
+---
+- name: Install firewall using hosts scope variable
+  hosts: webservers
+  become: yes
+  vars:
+    # Define the variables used in the task
+    a: ufw
+    b: present
+    c: yes
+  tasks:
+    - name: Install UFW firewall
+      ansible.builtin.apt:
+        name: "{{ a }}"
+        state: "{{ b }}"
+        update_cache: "{{ c }}"

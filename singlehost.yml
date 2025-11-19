@@ -1,0 +1,23 @@
+# variable that work on the single host deployment
+#mkdir host_vars
+#cd host_vars
+#vim 172.31.18.136 ----> created a file with the ip address of the server
+---
+ansible_user: ubuntu
+ansible_user_password: "your password"
+ansible_user_home: "/home/ubuntu"
+ansible_user_uid: 6546
+ansible_user_shell: "/bin/bash/"
+...
+- name: single host variables file
+  hosts: 172.31.18.136
+  tasks:
+   - name: single host user  
+     ansible.builtin.user:
+       name: "{{ansible_user}}"
+       password: "{{ansible_user_password | password_hash(sha256)}}"
+       home: "{{ansible_user_home}}"
+       uid: "{{ansible_user_uid}}"
+       shell: "{{ansible_user_shell}}"
+...
+#ansible-playbook -i hosts.ini user_creation.yml -k -K

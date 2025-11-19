@@ -1,0 +1,37 @@
+# In this yml file catch the OS information
+---
+- name: catch the Os information
+  hosts:
+  gather_facts:
+  tasks:
+    - name: gathering information
+      ansible.builtin.debug:
+       msg: "{{}}"
+...
+# method-1
+---
+- name: cacth Os information
+  hosts: all
+  gather_facts:
+  tasks:
+   - name: gathering information OS ansible_distribution
+     ansible.builtin.debug:
+      msg: "{{nsible_distribut}}"  # the name of the operating system distribution "Ubuntu"
+   - name: gather information OS version number of distribution
+     ansible.builtin.debug:
+      msg: "{{ansible_distribution_version}}" # The full version number of the distribution
+   - name: capture os major version
+     ansible.builtin.debug:
+      msg: "{{ansible_distribution_major_version}}" # The major version number (first part of the version string)
+
+ # method-2 
+  
+---
+- name: catch the OS information
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: gathering information servers OS
+      ansible.builtin.debug:
+        msg: "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})"
+...

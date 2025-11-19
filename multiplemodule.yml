@@ -1,0 +1,50 @@
+# in this workflow we define multiple modules to be excuted in sequence
+---
+- name: Multiple user creation
+  hosts: localhost
+  become: yes
+  tasks:
+   - name: create users
+     ansible.builtin.user:
+        name: "{{item.name}}"
+        password: "{{item.pass | password_hash('sha512')}}"
+        home: "{{item.home}}"
+     with_items:
+        - {  name: user1, pass: password1, home: /home/user1}
+        - {  name: user2, pass: password2, home: /home/user2}
+        - {  name: user3, pass: password3, home: /home/user3}
+   - name : copy the file 
+     ansible.builtin.copy:
+        src: "{{item.src}}"
+        dest: "{{item.dest}}"
+     with_items:
+        - { src: /tmp/file.yml , dest: /home/user1/file.yml}
+        - { src: /etc/passwd.txt, dest: /home/user2/passwd.txt}
+        - { src: /etc/hosts/init.in ,dest: /home/user3/ansible.in}
+...
+# Advanced anisble 2.5+
+# In this workflow we define multiple modules to be executed in sequence
+---
+- name: Multiple user creation
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Create users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.pass | password_hash('sha512') }}"
+        home: "{{ item.home }}"
+      loop:
+        - { name: user1, pass: password1, home: /home/user1 }
+        - { name: user2, pass: password2, home: /home/user2 }
+        - { name: user3, pass: password3, home: /home/user3 }
+
+    - name: Copy the file
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        - { src: /tmp/file.yml, dest: /home/user1/file.yml }
+        - { src: /etc/passwd.txt, dest: /home/user2/passwd.txt }
+        - { src: /etc/hosts/init.in, dest: /home/user3/ansible.in }
+...

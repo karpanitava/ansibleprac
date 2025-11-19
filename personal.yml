@@ -1,0 +1,89 @@
+# in this ym file has three severs  jenkins  Quality and Prodserver and perform ci-cd 
+---
+- name: Configure Jenkins server
+  hosts: jenkinsserver
+  become: true
+  tasks:
+    - name: Install required software in Jenkins
+      ansible.builtin.apt:
+        name: "{{ item.a }}"
+        state: "{{ item.b }}"
+        update_cache: "{{ item.c }}"
+      loop:
+        - { a: openjdk-11-jdk, b: present, c: yes }
+        - { a: maven, b: present, c: yes }
+        - { a: git, b: present, c: no }
+
+    - name: Fetch Jenkins WAR
+      ansible.builtin.get_url:
+        url: https://get.jenkins.io/war/2.422/jenkins.war
+        dest: /home/ubuntu/jenkins.war
+
+- name: Configure QA and Prod servers
+  hosts: qaserver:paserver
+  become: true
+  tasks:
+    - name: Install Tomcat and Git
+      ansible.builtin.apt:
+        name: "{{ item.a }}"
+        state: "{{ item.b }}"
+        update_cache: "{{ item.c }}"
+      loop:
+        - { a: tomcat11, b: present, c: yes }
+        - { a: tomcat11-admin, b: present, c: yes }
+        - { a: git, b: present, c: yes }
+
+    - name: Copy tomcat-users.xml
+      ansible.builtin.copy:
+        src: tomcat-user.xml
+        dest: /etc/tomcat11/tomcat-users.xml
+
+- name: Continuous download from Git and build
+  hosts: jenkinsserver
+  become: true
+  tasks:
+    - name: Clone code from GitHub
+      ansible.builtin.git:
+        repo: 'https://github.com/karpanitava/mavenbuild.git'
+        dest: /home/ubuntu/newpo
+
+    - name: Build the project
+      ansible.builtin.shell: mvn clean package
+      args:
+        chdir: /home/ubuntu/newpo 
+# The  section with  is typically used in Ansible tasks or modules to specify that the command or script should be executed from a particular directory.
+
+    - name: Copy WAR to QA server
+      ansible.builtin.copy:
+        src: /home/ubuntu/newpo/target/mywebapp.war
+        dest: /tmp/mywebapp.war
+        mode: '0644'
+      delegate_to: qaserver
+# It tells Ansible to run the task on a different host than the one currently being targeted.
+
+- name: Continuous deployment to QA
+  hosts: qaserver
+  become: true
+  tasks:
+    - name: Deploy WAR to Tomcat
+      ansible.builtin.copy:
+        src: /tmp/mywebapp.war
+        dest: /var/lib/tomcat11/webapps/mywebapp.war
+
+    - name: Download Selenium test scripts
+      ansible.builtin.git:
+        repo: 'https://github.com/karpanitava/testingweb.git'
+        dest: /home/ubuntu/test-web
+
+    - name: Execute Selenium tests
+      ansible.builtin.shell: java -jar /home/ubuntu/test-web/testwebapp.jar
+
+- name: Continuous delivery to Production
+  hosts: paserver
+  become: true
+  tasks:
+    - name: Deploy WAR to Tomcat
+      ansible.builtin.copy:
+        src: /tmp/mywebapp.war
+        dest: /var/lib/tomcat11/webapps/mywebapp.war
+...

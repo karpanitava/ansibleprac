@@ -1,0 +1,14 @@
+---
+- name: User Creation
+  hosts: all
+  become: true
+  tasks:
+    - name: Create user Jhone
+      user:
+        name: Jhone
+        password: "{{ 'MyP@ssw0rd' | password_hash('sha512') }}"
+        comment: "Jhone Doer User"
+        shell: /bin/bash
+        home: /home/Jhone
+        state: present
+...

@@ -1,0 +1,21 @@
+# first create a file1 in all servers
+# ansible all -m file -a 'path=/home/ubuntu/file1 state=touch '
+# among the all the servers one server is 172.16.45.233 has permission mode=770
+# ansible 172.16.45.233 -m file  -a 'path=/home/ubuntu/file1 mode=770 ' -b
+---
+- name: check and delete execuatable file
+  hosts: all
+  become: true
+  tasks:
+  - name: Capture the file stat
+    ansible.builtin.stat:
+     path: /home/ubuntu/file1
+    register: file_stat
+  - name: Display the  file stat
+    debug:
+      vars: file_stat
+  - name: Delete the file if executable
+    ansible.builtin.file:
+     path:  /home/ubuntu/file1
+     state: absent
+    when: file_stat.stat.executable == true

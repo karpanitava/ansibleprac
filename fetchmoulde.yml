@@ -1,0 +1,13 @@
+# fetch module is fetch data from reomte servers to controler
+# ansible all -m fetch -a 'src=/etc/hosts dest=/tmp/hosts -b
+---
+- name: Fetch module
+  hosts: all
+  become: yes
+  tasks:
+   - name: Fetch the /etc/hosts file from remote servers
+     ansible.builtin.fetch:
+      src=/etc/hosts
+      dest=/tmp/hosts
+      flat=yes
+...

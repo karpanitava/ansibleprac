@@ -1,0 +1,55 @@
+# Normal procedure to demonstrate loops in YAML
+---
+- name: Example of install tasks without loop
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Maven
+      ansible.builtin.apt:
+        name: maven
+        state: present
+        update_cache: yes
+
+    - name: Install Git
+      ansible.builtin.apt:
+        name: git
+        state: present
+        update_cache: yes
+
+    - name: Install Curl
+      ansible.builtin.apt:
+        name: curl
+        state: present
+        update_cache: yes
+
+# Repeating the same task using loop implementation with "with_items"
+---
+- name: Install multiple packages using with_items
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install multiple packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - git
+        - maven
+        - curl
+
+# Modern loop syntax (Ansible 2.5+)
+---
+- name: Install multiple packages using loop
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install multiple packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - git
+        - maven
+        - curl

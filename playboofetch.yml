@@ -1,0 +1,18 @@
+- name: Fetch the password file from server-1
+  hosts: 172.168.1.1
+  tasks:
+    - name: Fetch password file from server-1
+      ansible.builtin.fetch:
+        src: /tmp/password
+        dest: /etc/ansible/files/
+        flat: yes
+
+- name: Copy the password file to server-2
+  hosts: 172.168.1.2
+  become: yes
+  tasks:
+    - name: Copy the password file to server-2
+      ansible.builtin.copy:
+        src: /etc/ansible/files/password
+        dest: /tmp/password
+        flat: yes

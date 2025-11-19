@@ -1,0 +1,37 @@
+# install webserver on different Linux flavours
+---
+- name: install webserver on different Linux
+  hosts: all
+  become: yes
+  tasks:
+   - name: install httpd on Redhat os server
+     ansible.builtin.yum:
+      name: httpd
+      state: present
+      update_cache: yes
+     when: ansible.distribution == " Redhat"
+   - name: install Apache2 on Ubuntu os server
+     ansible.builtin.apt:
+      name: Apache2
+      state: present
+      update_cache: yes
+     when: ansible.distrubution == "Ubuntu"
+   - name: Edit the index.html file
+     ansible.builtin.copy:
+      content: <h1> Welcome to cicdclouds.com </h1>
+      dest: /var/www/html/index.html
+   - name: webservers restart
+     ansible.builtin.service:
+      name: Apache2
+      state: restarted
+     when: ansible.distribution == "ubuntu" 
+   - name: webserver are reaching or not
+     ansible.builtin.uri:
+      name: "{{item}}"
+      status_code: 200
+     loop:
+      - http://192.168.15.51
+      - http://192.168.15.15
+
+
+

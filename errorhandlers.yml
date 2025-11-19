@@ -1,0 +1,36 @@
+#✅ This playbook tries "apt" first. If it fails (e.g., on Red Hat), it falls back to "yum". The  block runs regardless of success or failure.
+---
+- name: Error handling for package installation
+  hosts: all
+  become: yes
+  tasks:
+    - block:
+        - name: Install git using apt on Ubuntu servers
+          apt:
+            name: git
+            state: present
+            update_cache: yes
+      rescue:
+        - name: Install git using yum on Red Hat servers
+          yum:
+            name: git
+            state: present
+            update_cache: yes
+      always:
+        - name: Display success message
+          debug:
+            msg: "Git installation was successful"
+ #	1.Verify user and set password                 
+whoami
+sudo passwd ec2-user
+#2.Enable SSH password authentication
+sudo vim /etc/ssh/sshd_config
+# Set: PasswordAuthentication yes
+sudo service sshd restart
+#3.Copy SSH key to target
+ssh-copy-id ec2-user@172.31.29.146
+#4.Add to Ansible inventory
+# /etc/ansible/hosts or custom inventory file
+172.31.29.146 ansible_user=ec2-user
+
+ansible-playbook errorhandler.yml -b

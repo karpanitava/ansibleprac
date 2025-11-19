@@ -1,0 +1,12 @@
+---
+- name: Example of copy module
+  hosts: all
+  tasks:
+    - name: Copy the file
+      ansible.builtin.copy:
+        src: etc/file100
+        dest: /tmp/file
+        owner: root
+        group: henry
+        mode: '0700'
+

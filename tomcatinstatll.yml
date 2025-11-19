@@ -1,0 +1,46 @@
+# tomcat installing using ansible loops
+---
+- name: Install and configure Tomcat10 with admin tools
+  hosts: deployment
+  become: yes
+  tasks:
+
+    - name: Install tomcat10 and tomcat10-admin
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - tomcat10
+        - tomcat10-admin
+
+    - name: Copy tomcat-users.xml configuration
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: /etc/tomcat10/tomcat-users.xml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Change Tomcat port from 8080 to 9090
+      ansible.builtin.replace:
+        path: /etc/tomcat10/server.xml
+        regexp: '8080'
+        replace: '9090'
+
+    - name: Restart Tomcat10 service
+      ansible.builtin.service:
+        name: tomcat10
+        state: restarted
+
+    - name: Pause for 1 minute
+      ansible.builtin.pause:
+        seconds: 60
+
+    - name: Check if Tomcat servers are responding
+      ansible.builtin.uri:
+        url: "{{ item }}"
+        status_code: 200
+      loop:
+        - "http://172.31.18.136:9090"
+        - "http://172.31.31.222:9090"

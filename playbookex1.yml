@@ -1,0 +1,34 @@
+# Ansible Using niginx application deplaoyment on remote server
+---
+- name: Deploy Nginx application on remote server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install nginx on remote server
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+    - name: Copy html file to remote servers
+      ansible.builtin.copy:
+        src: /home/ansibleuser/ansiblefiles/index.html
+        dest: /usr/share/nginx/html/
+        mode: '0644' # Added a standard mode for a static file
+    - name: Starting service of nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+    -  name: checking whether server-1 is running or not
+       ansible.builtin.uri:
+        url: https://192.168.2.0
+        status_code: 200
+    -  name: checking whether server-2 is running or not
+       ansible.builtin.uri:
+        url: https://192.168.3.0
+        status_code: 200
+    -  name: checking whether server-3 is running or not
+       ansible.builtin.uri:
+        url: https://192.168.4.0
+        status_code: 200
+    

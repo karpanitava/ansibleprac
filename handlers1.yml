@@ -1,0 +1,33 @@
+#This demonstrates the core benefit of handlers: idempotent service management based on configuration changes.
+---
+- name: handlers practicing
+  hosts: all
+  become: yes
+  tasks:
+   - name: Ensure Nginx is installed
+     ansible.builtin.yum:
+       name: nginx # Package Name
+       state: present
+       update_cache: yes
+   - name: Edit the index.html
+     ansible.builtin.copy:
+        content: " Welcome to cicdclouds.com"
+        dest: /var/www/html/index.html
+     notify: 
+      - Restarted Nginx service # same to same 
+  handlers:
+   - name: Restarted Nginx service # same to same 
+     ansible.builtin.service:
+       name: nginx
+       state: restarted
+   - name: checking the servers are if reaching prodcution
+     ansible.builtin.uri:
+       url: "{{item.a,}}"
+       status_code: "{{item.b}}"
+     loop:
+     - {a: http://172.31.4.6, b: 200}
+     - {a: http://172.31.5.6, b: 200}
+ 
+...
+
+

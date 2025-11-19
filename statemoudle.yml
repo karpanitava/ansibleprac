@@ -1,0 +1,31 @@
+# state module is used as gather the information files and directory
+#check the file  file1, if not present create directory with name of file1
+---
+- name : Check  file1 if not present , and Create a directory  file1
+  tasks:
+  - name: check file1 
+    stat:
+      path: /home/ubuntu/file1
+    register: file1_status
+  - name: Display stat output
+    debug:
+      var: file1_status
+... 
+
+# above the one of server create a file1  ansible 172.168.13.166 -m file -a "name= home/ubuntu/file1 state= touch"
+---
+- name : Check  file1 if not present , and Create a directory  file1
+  tasks:
+  - name: check file1 
+    stat:
+      path: /home/ubuntu/file1
+    register: file1_status
+  - name: Display stat output
+    debug:
+      var: file1_status
+  - name:  Create Directory /home/ubuntu/file1 if it doesn't exist
+    ansible.builtin.file:
+      path:  /home/ubuntu/file1
+      state: directory
+    when: not file1_status.stat.exists == false
+...

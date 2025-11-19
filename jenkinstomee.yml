@@ -1,0 +1,89 @@
+# In this yml configure the group of jennks and quality and prodservers
+---
+- name: Installing Jenkins and its supported software
+  hosts: jenkinsserver  # Inventory group for Jenkins servers
+  become: yes
+  tasks:
+    - name: Installing software (Java, Git, Maven)
+      ansible.builtin.apt:
+        name: "{{ item.a }}"
+        state: "{{ item.b }}"
+        update_cache: "{{ item.c }}"
+      loop:
+        - { a: openjdk-11-jdk, b: present, c: yes }
+        - { a: maven, b: present, c: no }
+        - { a: git, b: present, c: no }
+    - name: jekins s/w downloading
+      ansible.builtin.get_url:
+       url: https://get.jenkins.io/war/2.422/jenkins.war
+       dest: /home/ubuntu/jenkins.war
+- name: Installing Tomcat and tomcat-admin configuration
+  hosts: servers
+  tasks:
+    - name: installing tomcat11 and tomcat11-admin
+      ansible.builtin.apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      loop:
+       - {a: tomcat11, b: present, c: yes}
+       - {a: tomcat11-admin, b: present,c: no}
+    - name : copy the tomcat-users.xml
+      ansible.builtin.copy: 
+        src: tomcat-users.xml
+        dest: /home/ubuntu
+      notify: restart the tomcat11
+  handlers:
+   - name: restart the tomcat11
+     ansible.builtin.service:
+      name: tomcat11
+      state: restarted
+#-------------------------------------------------------------------
+# modfied above yml 
+---
+- name: Installing Jenkins and its supported software
+  hosts: jennks  # Updated group name for Jenkins servers
+  become: yes
+  tasks:
+    - name: Installing software (Java, Git, Maven)
+      ansible.builtin.apt:
+        name: "{{ item.a }}"
+        state: "{{ item.b }}"
+        update_cache: "{{ item.c }}"
+      loop:
+        - { a: openjdk-11-jdk, b: present, c: yes }
+        - { a: maven, b: present, c: no }
+        - { a: git, b: present, c: no }
+
+    - name: Jenkins software downloading
+      ansible.builtin.get_url:
+        url: https://get.jenkins.io/war/2.422/jenkins.war
+        dest: /home/ubuntu/jenkins.war
+
+- name: Installing Tomcat and tomcat-admin configuration
+  hosts: quality:prodservers  # Targeting both quality and prodservers groups
+  become: yes
+  tasks:
+    - name: Installing tomcat11 and tomcat11-admin
+      ansible.builtin.apt:
+        name: "{{ item.a }}"
+        state: "{{ item.b }}"
+        update_cache: "{{ item.c }}"
+      loop:
+        - { a: tomcat11, b: present, c: yes }
+        - { a: tomcat11-admin, b: present, c: no }
+
+    - name: Copy the tomcat-users.xml
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: /home/ubuntu
+      notify: restart the tomcat11
+
+  handlers:
+    - name: restart the tomcat11
+      ansible.builtin.service:
+        name: tomcat11
+        state: restarted
+
+
+    

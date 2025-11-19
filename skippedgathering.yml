@@ -1,0 +1,30 @@
+# Remote configuring gathering information will be skipped.
+# To aviod '-b' Higher previlage in yml file one " become is added.
+---
+- name: Skipped configuration information
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Install tree package
+      ansible.builtin.apt:
+        name: tree
+        state: present
+        update_cache: yes
+      tags: 
+        - install_tree
+
+    - name: Create user 'hariprasad' with hashed password
+      ansible.builtin.user:
+        name: hariprasad
+        password: "{{ 'cloudsinfo' | password_hash('sha512') }}"
+      tags:
+        - user_creation
+
+    - name: Copy password file to /tmp
+      ansible.builtin.copy:
+        src: /etc/password.txt
+        dest: /tmp/password.txt
+      tags:
+        - copy_password

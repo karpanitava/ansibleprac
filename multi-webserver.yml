@@ -1,0 +1,84 @@
+---
+# This playbook installs a web server (Apache/HTTPD or Nginx) and deploys
+# a custom index.html file on three different Linux distributions, handling
+# the distribution-specific package names, service names, and document root paths.
+- name: Deploy Web Servers across Ubuntu, RedHat, and Suse
+  hosts: all
+  become: yes
+
+  tasks:
+    # ----------------------------------------------
+    # 1. INSTALLATION & SERVICE MANAGEMENT
+    # ----------------------------------------------
+
+    - name: Install Apache2 on Ubuntu (using apt)
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install HTTPD on RedHat/CentOS (using yum/dnf)
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+      when: ansible_distribution in ["RedHat", "CentOS"]
+
+    - name: Install Nginx on Suse/SLES (using zypper)
+      ansible.builtin.zypper:
+        name: nginx
+        state: present
+      when: ansible_distribution in ["Suse", "SLES"]
+
+    # ----------------------------------------------
+    # 2. FILE COPY (Handling different document roots)
+    # ----------------------------------------------
+
+    # Define the custom content for the index file
+    - name: Define custom index content
+      ansible.builtin.set_fact:
+        custom_page_content: "<h1>Welcome! This page was deployed by Ansible on {{ ansible_distribution }}!</h1>"
+
+    - name: Copy index.html to Apache2 DocumentRoot on Ubuntu
+      ansible.builtin.copy:
+        content: "{{ custom_page_content }}"
+        dest: /var/www/html/index.html # Ubuntu default path
+        mode: '0644'
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Copy index.html to HTTPD DocumentRoot on RedHat/CentOS
+      ansible.builtin.copy:
+        content: "{{ custom_page_content }}"
+        dest: /var/www/html/index.html # RedHat/CentOS default path
+        mode: '0644'
+      when: ansible_distribution in ["RedHat", "CentOS"]
+
+    - name: Copy index.html to Nginx DocumentRoot on Suse/SLES
+      ansible.builtin.copy:
+        content: "{{ custom_page_content }}"
+        dest: /srv/www/htdocs/index.html # Suse default path for Nginx/Apache
+        mode: '0644'
+      when: ansible_distribution in ["Suse", "SLES"]
+
+    # ----------------------------------------------
+    # 3. ENSURE SERVICES ARE RUNNING AND ENABLED
+    # ----------------------------------------------
+
+    # Use a variable for the service name to avoid repetition
+    - name: Start and enable the correct web service
+      ansible.builtin.service:
+        name: "{{ web_service_name }}"
+        state: started
+        enabled: yes
+      vars:
+        web_service_name: >
+          {% if ansible_distribution == 'Ubuntu' %}
+            apache2
+          {% elif ansible_distribution in ['RedHat', 'CentOS'] %}
+            httpd
+          {% elif ansible_distribution in ['Suse', 'SLES'] %}
+            nginx
+          {% else %}
+            # If no match, set a placeholder and rely on 'failed' module if needed
+            "unknown_service"
+          {% endif %}

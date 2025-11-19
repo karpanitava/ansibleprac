@@ -1,0 +1,11 @@
+# ansible all -m git -a 'repo=https://github.com/startstop191/maven.git dest=/temp/maven' -b
+- name: Test Git Module
+  hosts: all
+  become: yes
+  tasks:
+    - name: Clone Maven repository 
+      ansible.builtin.git:
+        repo: https://github.com/startstop191/maven.git # <--- Corrected this line
+        dest: /temp/maven                             # <--- Corrected this line
+        # Optional: Specify a specific branch (default is 'HEAD')
+        # version: main

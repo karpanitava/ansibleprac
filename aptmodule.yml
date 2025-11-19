@@ -1,0 +1,11 @@
+# ansible all -m apt -a 'name=git state=present update_caches=yes ' -b 
+---
+- name: Install Git Package
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure git is installed via apt
+      ansible.builtin.apt:
+        name: git
+        state: present # state=present, absent, latest, 
+        update_caches: yes

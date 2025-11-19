@@ -1,0 +1,9 @@
+---
+- name: Check memory usage on all hosts
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Run free -m to check memory
+      ansible.builtin.command: free -m
+
+      

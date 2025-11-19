@@ -1,0 +1,10 @@
+# ansible all -m uri -a 'url=https://google.com status-code=200' -b
+---
+- name: Test URI module
+  hosts: all
+  tasks:
+    - name: Check if https://google.com is reachable and returns 200
+      ansible.builtin.uri:
+        url: 'https://google.com'
+        status_code: 200
+...

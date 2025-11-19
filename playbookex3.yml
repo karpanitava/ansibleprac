@@ -1,0 +1,12 @@
+# copy module play book
+---
+- name: copy the password file to remote server
+  hosts: all 
+  become: yes
+  tasks:
+   - name: copy the password file to remote server
+     ansible.builtin.Copy:
+       src: /etc/password
+       dest: /tmp/password
+       mode: 0644
+     

@@ -1,0 +1,85 @@
+# In the play book installing  tomcat10 and configuration file provide portnumbers
+---
+- name : configuration tomcat servers in prod envirorment
+  hosts:  all
+  become: yes
+  tasks: 
+  - name: install tomcate10 on prodserver 
+    ansible.builtin.apt:
+      name: tomcat10
+      state: present
+      update_cache: yes
+  - name: install tomcate10-admin on prodserver 
+    ansible.builtin.apt:
+      name: tomcat10-admin
+      state: present
+      update_cache: yes
+  - name: copy coconfiguration file to prodservers
+    ansible.builtin.copy:
+      src: /home/ansibleuser/ansiblefiles/tomcat-users.xml
+      dest: /etc/tomcat10/tomcat-users.xml
+      mode: 0644
+  - name: Port number replacing in prodservers
+    ansible.builtin.replace:
+      path: /etc/tomcat10/server.xml
+      regexp: 'port="8080"'
+      replace: 'port="9090"'
+  - name: Prodserver service Starting
+    ansible.buitin.service:
+      name:  tomcat10
+      state: started
+      enabled: yes
+  - name: checking prodserver running on portnumbers
+    ansible.builtin.uri:
+      url: http://localhost:9090
+      status_code: 200
+#--- Here the onward modfied version of playbookex2.yml 
+#- name: ⚙️ Configure Tomcat Servers in Production
+#  hosts: prodservers 
+#  become: yes
+#  tasks: 
+#    - name: Install tomcat10 and tomcat10-admin packages
+#      ansible.builtin.apt:
+#        name: 
+#          - tomcat10
+#          - tomcat10-admin
+#        state: present
+#        update_cache: yes
+
+#    - name: Copy (Template) tomcat-users.xml
+#      ansible.builtin.template:
+#        src: tomcat-users.xml.j2
+#        dest: /etc/tomcat10/tomcat-users.xml
+#        owner: tomcat
+#        group: tomcat
+#        mode: '0640'
+      # The handler is triggered ONLY if the file content changes!
+#      notify: Restart tomcat
+
+#    - name: Copy (Template) server.xml with custom port
+#      ansible.builtin.template:
+#        src: server.xml.j2
+#        dest: /etc/tomcat10/server.xml
+#        owner: tomcat
+#        group: tomcat
+#        mode: '0640'
+      # The handler is triggered ONLY if the file content changes!
+#      notify: Restart tomcat
+
+#    - name: Ensure Tomcat is started and enabled
+#     ansible.builtin.service:
+#        name: tomcat10
+#        state: started
+#        enabled: yes
+
+#    - name: Check Prodserver running on custom port (9090)
+#     ansible.builtin.uri:
+#        url: http://localhost:9090
+#        status_code: 200
+        # If running on default 8080, this check will fail.
+
+#  handlers:
+#    - name: Restart tomcat
+#      ansible.builtin.service:
+#        name: tomcat10
+#        state: restarted #

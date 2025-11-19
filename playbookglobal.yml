@@ -1,0 +1,17 @@
+# Here we creating the global varible for all playbooks using command passing the Global varible with using
+# --extra-vars "a=value b=value c= values"
+---
+- name: install /uninstall software
+  hosts: all
+  become: yes
+  tasks:
+  - name: Install /uninstallsoftware
+    ansible.buitin.apt:
+      name: "{{a}}"
+      state: "{{b}}"
+      update_cache: "{{c}}"
+...
+
+#ansible-playbook playbookglobal.yml --extra-vars "a=nginx b=present c=yes"
+#ansible-playbook playbookglobal.yml --extra-vars "a=nginx b=absent  c=absent"
+#ansible-playbook playbookglobal.yml  --extra-vars "a=git  b=present c=no"

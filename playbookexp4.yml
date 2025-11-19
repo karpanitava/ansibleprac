@@ -1,0 +1,18 @@
+# In this example playbook the value assigned via the highest precedence variable source, 
+#which in this case is the command line's --extra-vars, 
+#always supersedes a lower precedence variable source like the play's vars: section.
+---
+- name: Implementing playscop variables
+  hosts: all
+  vars:
+    -a: tomcat9   # <- Play Scope Variable 'a'
+    -b: present   # <- Play Scope Variable 'b'
+    -c: yes       # <- Play Scope Variable 'c'
+  tasks:
+   - name: Install/uninstall
+     apt: 
+      name: "{{a}}"        # Variable 'a' is used here
+      state: "{{b}}"       # Variable 'b' is used here
+      update_cache: "{{c}}"  # Variable 'c' is used here
+...
+# ansible-playbook playbookexp4.yml --extra-vars "a=nginx b=absent c=no" -----> this global scope has highest predence.

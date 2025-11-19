@@ -1,0 +1,9 @@
+# This the command to check free memory using shell com
+#  ansible all -m shell -a 'free -m'''
+---
+- name: Shell module example
+  hosts: all
+  become: true
+  tasks:
+    - name: Run memory check using free -m
+      ansible.builtin.shell: free -m

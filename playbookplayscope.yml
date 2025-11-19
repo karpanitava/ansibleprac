@@ -1,0 +1,14 @@
+# This is example for play Scope Variable 
+- name: playscope varibale example
+  hosts: all
+  become: yes
+  vars:
+    a: nginx
+    b: present
+    c: yes
+  tasks:
+  - name: install/uninstall
+    ansible.builtin.apt:
+      name: "{{a}}"
+      state: "{{b}}
+      update_cache: "{{c}}"

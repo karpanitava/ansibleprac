@@ -1,0 +1,11 @@
+# ansible all -m replace -a 'regexp=8080 replace=9090 path=/etc/myapp/config.yml' -b
+---
+- name: Repalce port number in myapp configuration 
+  hosts: all
+  become: yes
+  tasks:
+  - name: Replace port number from 8080 to 9090 in config.yml
+    ansible.builtin.replace:
+      path: /etc/myapp/config.yml
+      regexp: 8080
+      replace: 9090

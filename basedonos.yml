@@ -1,0 +1,43 @@
+# based on OS install softwares on servers
+---
+- name: install s/w on servers
+  hosts: all
+  gather_facts: yes
+  tasks:
+   - name: on ubuntu Os install git using apt
+     ansible.builtin.apt:
+        name: git
+        state: present
+        update_cache: yes
+     when: ansible_distribution == "ubuntu"
+   - name: Install git on RHEL OS  using yum
+     ansible.builtin.yum:
+        name: git
+        state: present
+        update_cache: yes
+     when: ansible_distribution == "RedHat"
+# Ansible playbook more robust and accurate: 
+# roles/git_install/tasks/main.yml
+---
+- name: Install Git on Ubuntu
+  ansible.builtin.apt:
+    name: git
+    state: present
+    update_cache: yes
+  when: ansible_distribution | lower == "ubuntu"
+
+- name: Install Git on RHEL/CentOS/Rocky/Amazon Linux
+  ansible.builtin.yum:
+    name: git
+    state: present
+    update_cache: yes
+  when: ansible_distribution | lower in ["redhat", "centos", "rocky", "amazon"]
+
+- name: Install Git on SUSE
+  ansible.builtin.zypper:
+    name: git
+    state: present
+    update_cache: yes
+  when: ansible_distribution | lower == "sles"   
+     
+...

@@ -1,0 +1,11 @@
+# ansible all -m service -a 'name=httpd state=started' -b
+---
+- name: Manage HTTPD service
+  hosts: all
+  become: yes
+  tasks: 
+  - name: Ensure HTTPD service is started
+    ansible.buitins.service:
+      name: httpd
+      state: started #  stopped, restarted, started
+...

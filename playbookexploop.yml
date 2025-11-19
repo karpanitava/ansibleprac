@@ -1,0 +1,16 @@
+# Here the we using creating user and directories with  global scope variable
+---
+- name: Creating User 
+  hosts: all
+  tasks:
+  - name : create user
+    ansible.builtin.user:
+      name: "{a}}"
+      password: "{{b}}"
+      home: "{{c}}"
+  - name: create User Directory
+    ansible.builtin.file:
+    path: "{{d}}"
+    state: "{{e}}"
+
+  #ansible-playbook playbookexploop.yml --extra-vars "a=user1 b= $ssh21 c=/home/user1 d= /home/usr1_dir e= touch"
