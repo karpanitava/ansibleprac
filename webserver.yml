@@ -1,0 +1,7 @@
+---
+- name: frontend nginx sever
+  hosts: frontend
+  become: yes
+  roles:
+    - webservers
+...

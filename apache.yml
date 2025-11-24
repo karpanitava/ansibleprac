@@ -1,0 +1,7 @@
+---
+- name: installing and configure the apache2
+  hosts: all
+  become: yes
+  roles: 
+    - apache
+...
