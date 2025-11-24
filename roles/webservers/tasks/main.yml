@@ -1,0 +1,14 @@
+# webservers/tasks/main.yml
+- name: Installing nginx server
+  ansible.builtin.include_tasks: nginx.yml
+
+- name: Configuring the nginx server
+  ansible.builtin.include_tasks: config.yml
+...
+
+
+
+
+
+
+

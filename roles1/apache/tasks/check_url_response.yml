@@ -1,0 +1,9 @@
+---
+- name: check url respose of server
+  ansible.builtin.uri:
+   url: "{{item}}"
+   status_code: 200
+  loop:
+   - http: //ip1
+   - http: //ip2
+...
